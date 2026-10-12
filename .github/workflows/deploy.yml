@@ -33,4 +33,21 @@ jobs:
         run: npm test
 
       - name: Build Docker image
-        run: docker build -t backend-app:latest .
+        run: docker build -f dockerfile -t backend-app:latest .
+
+      - name: Log in to Docker Hub
+        if: github.event_name == 'push'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Tag Docker image
+        if: github.event_name == 'push'
+        run: docker tag backend-app:latest raunik1234/backend-app:latest
+
+      - name: Push Docker image
+        if: github.event_name == 'push'
+        run: docker push raunik1234/backend-app:latest 
+
+
